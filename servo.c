@@ -29,7 +29,7 @@ void servo_move(uint16_t degrees){
     int match = 320000 - cycles;
 
 
-    TIMER1_TBPMR_R = (match >> 16);
-    TIMER1_TBMATCHR_R = (match &= ~0x110000);
+    TIMER1_TBPMR_R = (match >> 16) & 0xFF;
+    TIMER1_TBMATCHR_R = (match & 0xFFFF);
 }
 
