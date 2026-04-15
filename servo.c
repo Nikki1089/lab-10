@@ -17,7 +17,6 @@ void servo_init(){
     TIMER1_CFG_R |= 0x4;
     TIMER1_TBMR_R &= ~0x4;
     TIMER1_TBMR_R |= 0b1010;
-    TIMER1_TBPR_R = 0x04;
     TIMER1_TBILR_R = 0xE200;
     TIMER1_TBPMR_R = 0x04;
     TIMER1_TBMATCHR_R = 0xC4B4;
