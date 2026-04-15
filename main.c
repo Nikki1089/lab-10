@@ -11,9 +11,4 @@ int main(void)
     servo_move(30);
     servo_move(150);
     servo_move(90);
-
-    while (1)
-    {
-        // Hold position at 90 degrees
-    }
 }
