@@ -2,8 +2,8 @@
 #include "Timer.h"
 #include "lcd.h"
 
-int RIGHT = ; 
-int LEFT = ;
+int RIGHT = 7500; 
+int LEFT = 35000;
 
 void servo_init(){
     SYSCTL_RCGCTIMER_R |= 0x2;
