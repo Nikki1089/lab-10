@@ -30,7 +30,7 @@ void servo_init(){
 void servo_move(uint16_t degrees){
    {
      unsigned pulse_width;
-     pulse_width = (36000 -7500)*degrees /180.0 + 7500;    // 7500->0 degree    36000->180 degree
+     pulse_width = (32000 -16000)*degrees /180.0 + 16000;    // 7500->0 degree    36000->180 degree
      TIMER1_TBMATCHR_R = (pulse_period - pulse_width ) & 0xFFFF;
      TIMER1_TBPMR_R = (pulse_period - pulse_width) >> 16;
      timer_waitMillis(500);
