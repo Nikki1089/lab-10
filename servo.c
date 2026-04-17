@@ -13,7 +13,7 @@ void servo_init(){
      GPIO_PORTB_PCTL_R &= ~0x00F00000; 
      GPIO_PORTB_PCTL_R |=  0x00700000;  
     GPIO_PORTB_DIR_R   |= 0x20;    
-    GPIO_PORTB_DEN_R   |= 0x2
+    GPIO_PORTB_DEN_R   |= 0x20;
 
      TIMER1_TBMR_R &= ~TIMER_TBMR_TBCMR;
      TIMER1_CFG_R |= 0x4;
