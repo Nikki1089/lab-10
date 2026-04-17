@@ -2,38 +2,51 @@
 #include "Timer.h"
 #include "lcd.h"
 
-int pulse_period  = 320000;
-int mid_width = 22000;
+int RIGHT = 8000; // 320000;
+int LEFT = 32000; // 1280000;
 
-void servo_init(){
-    SYSCTL_RCGCTIMER_R |= 0x02;   // Timer1
-   SYSCTL_RCGCGPIO_R  |= 0x02;   // Port B
-     TIMER1_CTL_R &= ~TIMER_CTL_TBEN;
-     GPIO_PORTB_AFSEL_R |= 0x20;       
-     GPIO_PORTB_PCTL_R &= ~0x00F00000; 
-     GPIO_PORTB_PCTL_R |=  0x00700000;  
-    GPIO_PORTB_DIR_R   |= 0x20;    
-    GPIO_PORTB_DEN_R   |= 0x20;
+void servo_init()
+{
+    SYSCTL_RCGCTIMER_R |= 0x2;
+    SYSCTL_RCGCGPIO_R |= 0x2;
+    while ((SYSCTL_PRTIMER_R & 0x2) != 0x2)
+    {
+    }
+    while ((SYSCTL_PRGPIO_R & 0x2) != 0x2)
+    {
+    }
+    GPIO_PORTB_DEN_R |= 0x20;
+    GPIO_PORTB_DIR_R |= 0x20;
+    GPIO_PORTB_AFSEL_R |= 0x20;
+    GPIO_PORTB_PCTL_R |= 0x700000;
 
-     TIMER1_TBMR_R &= ~TIMER_TBMR_TBCMR;
-     TIMER1_CFG_R |= 0x4;
-     TIMER1_TBMR_R |= 0x2;
-     TIMER1_TBMR_R |= TIMER_TBMR_TBAMS; 
-     TIMER1_TBILR_R = pulse_period & 0xFFFF; 
-     TIMER1_TBPR_R = pulse_period >> 16 ;
-
-     TIMER1_TBMATCHR_R = (pulse_period - mid_width ) & 0xFFFF;
-     TIMER1_TBPMR_R = (pulse_period - mid_width) >> 16;
-     TIMER1_CTL_R |= TIMER_CTL_TBEN; 
+    // Configure timer for PWM Mode
+    TIMER1_CTL_R &= ~0x100;
+    TIMER1_CFG_R |= 0x4;
+    TIMER1_TBMR_R &= ~0x4; // Timer B Mode Register
+    TIMER1_TBMR_R |= 0b1010;
+//    TIMER1_TBPR_R = 0x04;
+    TIMER1_TBILR_R = PWM_PERIOD_TSTEPS & 0xffff; //0xE200; // Timer B Interval Load
+    TIMER1_TBPR_R = (PWM_PERIOD_TSTEPS >> 16) & 0xff; //0x04;
+    TIMER1_TBMATCHR_R = 0xC4B4; // Timer B Match Register
+    TIMER1_CTL_R |= 0x100;
 }
 
-void servo_move(uint16_t degrees){
-   {
-     unsigned pulse_width;
-     pulse_width = (32000 -16000)*degrees /180.0 + 16000;    // 7500->0 degree    36000->180 degree
-     TIMER1_TBMATCHR_R = (pulse_period - pulse_width ) & 0xFFFF;
-     TIMER1_TBPMR_R = (pulse_period - pulse_width) >> 16;
-     timer_waitMillis(500);
-}
-}
+void servo_move(uint16_t degrees)
+{
+    // 5ms per degree
+//    TIMER1_CTL_R &= ~0x100;
+//    int cycles = (((LEFT - RIGHT) / 180) * degrees) + RIGHT;
+//    int match = PWM_PERIOD_TSTEPS - cycles;
+    pulse_width = RIGHT + ((LEFT - RIGHT) * degrees) / 180;
+    match = PWM_PERIOD_TSTEPS - pulse_width;
+    TIMER1_TBMATCHR_R = match & 0xffff; // &= ~0x110000
+    TIMER1_TBPMR_R = (match >> 16) & 0xff;
+//    for (i = 0; i < 5 * degrees; ++i) {
+//        lcd_printf("%d", TIMER1_TBMATCHR_R);
+//    }
+//    timer_waitMillis(5 * degrees);
+//    TIMER1_TBMATCHR_R = TIMER1_TBPMR_R = 0;
+//    TIMER1_CTL_R |= 0x100;
 
+}
